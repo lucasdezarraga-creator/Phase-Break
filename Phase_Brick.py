@@ -32,19 +32,22 @@ paddle.centerx = screen.get_width() / 2
 ball_pos = pygame.Vector2(paddle.centerx, paddle.top - BALL_RADIUS)
 ball_velo = pygame.Vector2(0,0)
 
-bricks = []
-
 current_ball_color = BRICK_COLORS[3]
 
-for row in range(BRICK_ROWS):
-    for column in  range(BRICK_COLUMNS):
-        x = OFFSET_X + column * (BRICK_WIDTH + BRICK_GAP)
-        y = OFFSET_Y + row * (BRICK_COLUMNS + BRICK_GAP)
+def create_bricks():
+    new_bricks = []
+    for row in range(BRICK_ROWS):
+        for column in  range(BRICK_COLUMNS):
+            x = OFFSET_X + column * (BRICK_WIDTH + BRICK_GAP)
+            y = OFFSET_Y + row * (BRICK_COLUMNS + BRICK_GAP)
 
-        brick_color = BRICK_COLORS[row]
+            brick_color = BRICK_COLORS[row]
 
-        brick = pygame.Rect(x, y, BRICK_WIDTH, BRICK_HEIGHT)
-        bricks.append({"rect": brick, "color": brick_color})
+            brick = pygame.Rect(x, y, BRICK_WIDTH, BRICK_HEIGHT)
+            new_bricks.append({"rect": brick, "color": brick_color})
+    return new_bricks
+
+bricks = create_bricks()
 
 was_launched = False
 
@@ -128,6 +131,17 @@ while running:
 
                 if current_ball_color == brick["color"]:
                     bricks.remove(brick)
+
+                    if len(bricks) == 0:
+                        bricks = create_bricks()
+                        paddle = pygame.Rect(0, 610, 250, 30)
+                        paddle.centerx = screen.get_width() / 2
+
+                        ball_pos = pygame.Vector2(paddle.centerx, paddle.top - BALL_RADIUS)
+                        ball_velo = pygame.Vector2(0,0)
+
+                        was_launched = False
+
                 break
 
     if paddle.left < 0:
