@@ -68,8 +68,6 @@ class PhaseBricks:
         )
 
     def step(self, action, dt = 0.016):
-        distance_to_ball = abs(self.paddle.centerx - self.ball_pos.x)
-
         reward = -0.05
         done = False
 
