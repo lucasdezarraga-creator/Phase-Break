@@ -68,7 +68,7 @@ class PhaseBricks:
         )
 
     def step(self, action, dt = 0.016):
-        reward = 100
+        reward = 0.0
         done = False
 
         for event in pygame.event.get():
@@ -104,13 +104,13 @@ class PhaseBricks:
                 self.ball_velo.y *= -1
 
             if self.ball_pos.y - self.BALL_RADIUS > self.screen.get_height():
-                reward = -500
+                reward = -200
                 done = True
 
             if ball_rect.colliderect(self.paddle):
                 self.ball_pos.y = self.paddle.top - self.BALL_RADIUS
                 self.ball_velo.y *= -1
-                reward = 30
+                reward = 15
 
                 if self.ball_pos.x < self.paddle.centerx:
                     self.ball_velo.x -= 100
@@ -144,7 +144,7 @@ class PhaseBricks:
 
                     if self.current_ball_color == brick["color"]:
                         self.bricks.remove(brick)
-                        reward = 20
+                        reward = 100
 
                         if len(self.bricks) == 0:
                             reward = 500

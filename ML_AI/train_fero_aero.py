@@ -115,13 +115,6 @@ for episode in range(5000):
         
         reward -= 0.005  
         
-        if reward > 5:  
-            consecutive_paddle_hits = 0  
-        elif reward >= 0:  
-            consecutive_paddle_hits += 1
-            if consecutive_paddle_hits >= 4:
-                reward -= 10.0  
-        
         agent.remember(state, action, reward, next_state, done)
         
         agent.replay()
@@ -133,4 +126,4 @@ for episode in range(5000):
         agent.epsilon *= EPSILON_DECAY
 
     if episode % 10 == 0:
-        print(f"Episode: {episode} | Taxed Score: {total_reward:.2f} | Exploration Bias: {agent.epsilon:.2f}")
+        print(f"Episode: {episode} | Score: {total_reward:.2f} | Exploration Bias: {agent.epsilon:.2f}")
