@@ -1,5 +1,6 @@
 import pygame
 import random
+import sys
 
 class PhaseBricks:
     def __init__(self):
@@ -11,11 +12,11 @@ class PhaseBricks:
         self.BALL_RADIUS = 25
         self.BALL_SPEED = 450
         self.BRICK_ROWS = 4
-        self.BRICK_COLUMNS = 7
+        self.BRICK_COLUMNS = 9
         self.BRICK_WIDTH = 120
         self.BRICK_HEIGHT = 40
-        self.BRICK_GAP = 45
-        self.OFFSET_X = 80
+        self.BRICK_GAP = 10
+        self.OFFSET_X = 60
         self.OFFSET_Y = 80
 
         self.BRICK_COLORS = [
@@ -32,7 +33,7 @@ class PhaseBricks:
         for row in range(self.BRICK_ROWS):
             for column in  range(self.BRICK_COLUMNS):
                 x = self.OFFSET_X + column * (self.BRICK_WIDTH + self.BRICK_GAP)
-                y = self.OFFSET_Y + row * (self.BRICK_COLUMNS + self.BRICK_GAP)
+                y = self.OFFSET_Y + row * (self.BRICK_HEIGHT + self.BRICK_GAP)
 
                 brick_color = self.BRICK_COLORS[row]
 
@@ -50,30 +51,32 @@ class PhaseBricks:
         self.current_ball_color = self.BRICK_COLORS[3]
         self.bricks = self.create_bricks()
 
-        self.was_launched = False
+        self.was_launched = True
 
         self.ball_velo.x = self.BALL_SPEED * 0.7
-        self.ball_velo.y = self.BALL_SPEED * 0.7
+        self.ball_velo.y = -self.BALL_SPEED * 0.7
 
         return self.get_game_data()
 
     def get_game_data(self):
-        return{
+        return(
             self.paddle.x,
             self.ball_pos.x,
             self.ball_pos.y,
             self.ball_velo.x,
             self.ball_velo.y
-        }
+        )
 
     def step(self, action, dt = 0.016):
-        reward = 0.1
+        distance_to_ball = abs(self.paddle.centerx - self.ball_pos.x)
+
+        reward = max(0.0, 1.0 - (distance_to_ball / (self.screen.get_width() / 2)))
         done = False
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                exit()
+                sys.exit()
 
         if action == 0:
             self.paddle.x -= self.PLAYER_SPEED * dt
@@ -119,48 +122,49 @@ class PhaseBricks:
                 self.ball_velo.x = max(-400, min(400, self.ball_velo.x))
                 self.current_ball_color = random.choice(self.BRICK_COLORS)
 
-                for brick in self.bricks[:]:
-                    if ball_rect.colliderect(brick["rect"]):
-                        offset_left = ball_rect.right - brick["rect"].left
-                        offset_right = brick["rect"].right - ball_rect.left 
-                        offset_top = ball_rect.bottom - brick["rect"].top
-                        offset_bottom = brick["rect"].bottom - ball_rect.top
+            for brick in self.bricks[:]:
+                if ball_rect.colliderect(brick["rect"]):
+                    offset_left   = abs(ball_rect.right - brick["rect"].left)
+                    offset_right  = abs(brick["rect"].right - ball_rect.left)
+                    offset_top    = abs(ball_rect.bottom - brick["rect"].top)
+                    offset_bottom = abs(brick["rect"].bottom - ball_rect.top)
 
-                        smallest_offest = min(offset_left, offset_right, offset_top, offset_bottom)
+                    smallest_offest = min(offset_left, offset_right, offset_top, offset_bottom)
 
-                        if smallest_offest == offset_left:
-                            self.ball_pos.x = brick["rect"].left - self.BALL_RADIUS
-                            self.ball_velo.x *= -1
-                        elif smallest_offest == offset_right:
-                            self.ball_pos.x = brick["rect"].right + self.BALL_RADIUS
-                            self.ball_velo.x *= -1
-                        elif smallest_offest == offset_top:
-                            self.ball_pos.y = brick["rect"].top - self.BALL_RADIUS
-                            self.ball_velo.y *= -1
-                        elif smallest_offest == offset_bottom:
-                            self.ball_pos.y = brick["rect"].bottom + self.BALL_RADIUS
-                            self.ball_velo.y *= -1
+                    if smallest_offest == offset_left:
+                        self.ball_pos.x = brick["rect"].left - self.BALL_RADIUS
+                        self.ball_velo.x *= -1
+                    elif smallest_offest == offset_right:
+                        self.ball_pos.x = brick["rect"].right + self.BALL_RADIUS
+                        self.ball_velo.x *= -1
+                    elif smallest_offest == offset_top:
+                        self.ball_pos.y = brick["rect"].top - self.BALL_RADIUS
+                        self.ball_velo.y *= -1
+                    elif smallest_offest == offset_bottom:
+                        self.ball_pos.y = brick["rect"].bottom + self.BALL_RADIUS
+                        self.ball_velo.y *= -1
 
-                        if self.current_ball_color == brick["color"]:
-                            self.bricks.remove(brick)
-                            reward = 20
+                    if self.current_ball_color == brick["color"]:
+                        self.bricks.remove(brick)
+                        reward = 20
 
-                            if len(self.bricks) == 0:
-                                reward = 500
-                                done = True
+                        if len(self.bricks) == 0:
+                            reward = 500
+                            done = True
                         else:
                             reward = -2
                         break
 
-            self.screen.fill((12, 48, 92))
-            pygame.draw.rect(self.screen, (235, 245, 255), self.paddle)
-            pygame.draw.circle(self.screen, self.current_ball_color, self.ball_pos, self.BALL_RADIUS)
+        self.screen.fill((12, 48, 92))
+        pygame.draw.rect(self.screen, (235, 245, 255), self.paddle)
+        pygame.draw.circle(self.screen, self.current_ball_color, self.ball_pos, self.BALL_RADIUS)
 
-            for brick in self.bricks:
-                pygame.draw.rect(self.screen, brick["color"], brick["rect"])
+        for brick in self.bricks:
+            pygame.draw.rect(self.screen, brick["color"], brick["rect"])
 
-            pygame.display.flip()
+        pygame.display.flip()
 
-            self.clock.tick(120)
+        pygame.event.pump()
+        self.clock.tick(120)
 
-            return self.get_game_data(), reward, done
+        return self.get_game_data(), reward, done
