@@ -105,6 +105,8 @@ for episode in range(5000):
     total_reward = 0
     done = False
     
+    consecutive_paddle_hits = 0
+    
     raw_state = env.reset()
     state = get_normalized_state(*raw_state)
     
@@ -113,19 +115,24 @@ for episode in range(5000):
         next_raw_state, reward, done = env.step(action)
         next_state = get_normalized_state(*next_raw_state)
         
-        # Save experience to memory buffer
+        reward -= 0.02  
+        
+        if reward > 5:  
+            consecutive_paddle_hits = 0  
+        elif reward >= 0:  
+            consecutive_paddle_hits += 1
+            if consecutive_paddle_hits >= 4:
+                reward -= 10.0  
+        
         agent.remember(state, action, reward, next_state, done)
         
-        # Train the network using memory batches
         agent.replay()
         
         state = next_state
         total_reward += reward
         
-    # Slowly scale down randomness
     if agent.epsilon > EPSILON_MIN:
         agent.epsilon *= EPSILON_DECAY
 
-    # Print diagnostics every 10 episodes
     if episode % 10 == 0:
-        print(f"Episode: {episode} | Accumulated Score: {total_reward:.2f} | Exploration Bias: {agent.epsilon:.2f}")
+        print(f"Episode: {episode} | Taxed Score: {total_reward:.2f} | Exploration Bias: {agent.epsilon:.2f}")

@@ -68,7 +68,9 @@ class PhaseBricks:
         )
 
     def step(self, action, dt = 0.016):
-        reward = -0.05
+        distance_to_ball = abs(self.paddle.centerx - self.ball_pos.x)
+
+        reward = max(0.0, 1.0 - (distance_to_ball / (self.screen.get_width() / 2)))
         done = False
 
         for event in pygame.event.get():
