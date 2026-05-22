@@ -86,9 +86,8 @@ class DQNAgent:
         loss.backward()
         self.optimizer.step()
 
-# --- PREPARE CONTINUOUS STATES ---
 def get_normalized_state(paddle_x, ball_x, ball_y, ball_velo_x, ball_velo_y):
-    # Instead of grid division, we map positions as decimals from -1.0 to 1.0
+
     return np.array([
         paddle_x / 1280.0,
         ball_x / 1280.0,
@@ -97,7 +96,6 @@ def get_normalized_state(paddle_x, ball_x, ball_y, ball_velo_x, ball_velo_y):
         1.0 if ball_velo_y > 0 else -1.0
     ], dtype=np.float32)
 
-# --- MAIN LOOP ---
 env = PhaseBricks()
 agent = DQNAgent(state_size=5, action_size=3)
 
@@ -115,7 +113,7 @@ for episode in range(5000):
         next_raw_state, reward, done = env.step(action)
         next_state = get_normalized_state(*next_raw_state)
         
-        reward -= 0.02  
+        reward -= 0.005  
         
         if reward > 5:  
             consecutive_paddle_hits = 0  
