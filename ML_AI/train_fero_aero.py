@@ -26,5 +26,7 @@ def get_q_value(state):
         q_table[state] = [0.0, 0.0, 0.0]
     return q_table[state]
 
+epsilon = START
+
 for episode in range(5000):
     print(f"FeroAero is starting episode {episode}...")
