@@ -100,9 +100,9 @@ def get_normalized_state(paddle_x, ball_x, ball_y, ball_velo_x, ball_velo_y, col
 env = PhaseBricks()
 agent = DQNAgent(state_size=6, action_size=3)
 
-#agent.model.load_state_dict(torch.load("fero_aero_brain.pth"))
-agent.epsilon = 1
-agent.memory.clear()
+agent.model.load_state_dict(torch.load("fero_aero_brain.pth"))
+#agent.epsilon = 1
+#agent.memory.clear()
 
 for episode in range(5000):
     total_reward = 0.0
