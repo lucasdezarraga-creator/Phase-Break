@@ -15,9 +15,9 @@ from Phase_Brick import PhaseBricks
 LEARN_RATE = 0.001
 DISCOUNT = 0.99
 EPSILON_START = 1.0
-EPSILON_DECAY = 0.996  # Decays smoothly to give the network time to learn
-EPSILON_MIN = 0.02
-MEMORY_SIZE = 10000
+EPSILON_DECAY = 0.995
+EPSILON_MIN = 0.01
+MEMORY_SIZE = 5000
 BATCH_SIZE = 64
 
 # --- NEURAL NETWORK BRAIN ---
@@ -67,10 +67,11 @@ class DQNAgent:
         # Sample a random batch of past memories to learn from
         minibatch = random.sample(self.memory, BATCH_SIZE)
         
-        states = torch.FloatTensor([m[0] for m in minibatch])
+        # 🏎️ SPEED FIX: Convert lists of arrays to a single numpy array FIRST
+        states = torch.FloatTensor(np.array([m[0] for m in minibatch]))
         actions = torch.LongTensor([m[1] for m in minibatch]).unsqueeze(1)
         rewards = torch.FloatTensor([m[2] for m in minibatch])
-        next_states = torch.FloatTensor([m[3] for m in minibatch])
+        next_states = torch.FloatTensor(np.array([m[3] for m in minibatch]))
         dones = torch.FloatTensor([m[4] for m in minibatch])
 
         # Get current predictions
@@ -86,24 +87,26 @@ class DQNAgent:
         loss.backward()
         self.optimizer.step()
 
-def get_normalized_state(paddle_x, ball_x, ball_y, ball_velo_x, ball_velo_y):
-
+def get_normalized_state(paddle_x, ball_x, ball_y, ball_velo_x, ball_velo_y, color_index):
     return np.array([
         paddle_x / 1280.0,
         ball_x / 1280.0,
         ball_y / 720.0,
         1.0 if ball_velo_x > 0 else -1.0,
-        1.0 if ball_velo_y > 0 else -1.0
+        1.0 if ball_velo_y > 0 else -1.0,
+        color_index / 3.0
     ], dtype=np.float32)
 
 env = PhaseBricks()
-agent = DQNAgent(state_size=5, action_size=3)
+agent = DQNAgent(state_size=6, action_size=3)
+
+#agent.model.load_state_dict(torch.load("fero_aero_brain.pth"))
+agent.epsilon = 1
+agent.memory.clear()
 
 for episode in range(5000):
-    total_reward = 0
+    total_reward = 0.0
     done = False
-    
-    consecutive_paddle_hits = 0
     
     raw_state = env.reset()
     state = get_normalized_state(*raw_state)
@@ -112,8 +115,6 @@ for episode in range(5000):
         action = agent.choose_action(state)
         next_raw_state, reward, done = env.step(action)
         next_state = get_normalized_state(*next_raw_state)
-        
-        reward -= 0.005  
         
         agent.remember(state, action, reward, next_state, done)
         
@@ -127,3 +128,7 @@ for episode in range(5000):
 
     if episode % 10 == 0:
         print(f"Episode: {episode} | Score: {total_reward:.2f} | Exploration Bias: {agent.epsilon:.2f}")
+
+    if episode % 100 == 0 and episode > 0:
+        torch.save(agent.model.state_dict(), "fero_aero_brain.pth")
+        print(f"--- Brain saved successfully at episode {episode}! ---")

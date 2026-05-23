@@ -1,3 +1,7 @@
+import os
+ 
+os.environ["SDL_VIDEODRIVER"] = "dummy"
+
 import pygame
 import random
 import sys
@@ -59,12 +63,17 @@ class PhaseBricks:
         return self.get_game_data()
 
     def get_game_data(self):
+        color_index = 0
+        if self.current_ball_color in self.BRICK_COLORS:
+            color_index = self.BRICK_COLORS.index(self.current_ball_color)
+
         return(
             self.paddle.x,
             self.ball_pos.x,
             self.ball_pos.y,
             self.ball_velo.x,
-            self.ball_velo.y
+            self.ball_velo.y,
+            color_index
         )
 
     def step(self, action, dt = 0.016):
@@ -90,6 +99,9 @@ class PhaseBricks:
             self.ball_pos.x += self.ball_velo.x * dt
             self.ball_pos.y += self.ball_velo.y * dt
 
+            ball_dist = abs(self.paddle.centerx - self.ball_pos.x)
+            reward += max(0.0, 0.5 * (1.0 - (ball_dist / 1280.0)))
+
             ball_rect = pygame.Rect(self.ball_pos.x - self.BALL_RADIUS, self.ball_pos.y - self.BALL_RADIUS, self.BALL_RADIUS * 2, self.BALL_RADIUS * 2)
 
             if self.ball_pos.x - self.BALL_RADIUS < 0:
@@ -104,13 +116,13 @@ class PhaseBricks:
                 self.ball_velo.y *= -1
 
             if self.ball_pos.y - self.BALL_RADIUS > self.screen.get_height():
-                reward = -200
+                reward = -1000.0
                 done = True
 
             if ball_rect.colliderect(self.paddle):
                 self.ball_pos.y = self.paddle.top - self.BALL_RADIUS
                 self.ball_velo.y *= -1
-                reward = 15
+                reward = 200.0
 
                 if self.ball_pos.x < self.paddle.centerx:
                     self.ball_velo.x -= 100
@@ -144,14 +156,14 @@ class PhaseBricks:
 
                     if self.current_ball_color == brick["color"]:
                         self.bricks.remove(brick)
-                        reward = 100
+                        reward = 100.0
 
                         if len(self.bricks) == 0:
-                            reward = 500
+                            reward = 1000.0
                             done = True
-                        else:
-                            reward = -2
-                        break
+                    else:
+                        reward = -5.0
+                    break
 
         self.screen.fill((12, 48, 92))
         pygame.draw.rect(self.screen, (235, 245, 255), self.paddle)
