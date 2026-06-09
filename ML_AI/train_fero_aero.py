@@ -18,16 +18,16 @@ EPSILON_START = 1.0
 EPSILON_DECAY = 0.995
 EPSILON_MIN = 0.01
 MEMORY_SIZE = 5000
-BATCH_SIZE = 64
+BATCH_SIZE = 128
 
 # --- NEURAL NETWORK BRAIN ---
 class DQNBrain(nn.Module):
     def __init__(self, state_size, action_size):
         super(DQNBrain, self).__init__()
         # Dense layers to process spatial relations smoothly
-        self.fc1 = nn.Linear(state_size, 64)
-        self.fc2 = nn.Linear(64, 64)
-        self.output_layer = nn.Linear(64, action_size)
+        self.fc1 = nn.Linear(state_size, 128)
+        self.fc2 = nn.Linear(128, 128)
+        self.output_layer = nn.Linear(128, action_size)
         
     def forward(self, x):
         x = torch.relu(self.fc1(x))

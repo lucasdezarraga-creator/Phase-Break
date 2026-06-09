@@ -1,6 +1,6 @@
 import os
  
-#os.environ["SDL_VIDEODRIVER"] = "dummy"
+os.environ["SDL_VIDEODRIVER"] = "dummy"
 
 import pygame
 import random
@@ -175,6 +175,9 @@ class PhaseBricks:
         pygame.display.flip()
 
         pygame.event.pump()
-        self.clock.tick(120)
+
+        if not self.headless:
+            self.clock.tick(120)
 
         return self.get_game_data(), reward, done
+    
