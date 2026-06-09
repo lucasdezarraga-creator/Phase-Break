@@ -97,7 +97,7 @@ def get_normalized_state(paddle_x, ball_x, ball_y, ball_velo_x, ball_velo_y, col
         color_index / 3.0
     ], dtype=np.float32)
 
-env = PhaseBricks()
+env = PhaseBricks(headless = True)
 agent = DQNAgent(state_size=6, action_size=3)
 
 agent.model.load_state_dict(torch.load("fero_aero_brain.pth"))

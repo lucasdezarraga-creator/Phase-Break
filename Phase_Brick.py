@@ -1,16 +1,18 @@
 import os
- 
-os.environ["SDL_VIDEODRIVER"] = "dummy"
 
 import pygame
 import random
 import sys
 
 class PhaseBricks:
-    def __init__(self):
+    def __init__(self, headless = False):
         pygame.init()
         self.screen = pygame.display.set_mode((1280, 720))
         self.clock = pygame.time.Clock()
+        self.headless = headless
+
+        if self.headless:
+            os.environ["SDL_VIDEODRIVER"] = "dummy"
 
         self.PLAYER_SPEED = 450
         self.BALL_RADIUS = 25
@@ -165,18 +167,18 @@ class PhaseBricks:
                         reward = -5.0
                     break
 
-        self.screen.fill((12, 48, 92))
-        pygame.draw.rect(self.screen, (235, 245, 255), self.paddle)
-        pygame.draw.circle(self.screen, self.current_ball_color, self.ball_pos, self.BALL_RADIUS)
-
-        for brick in self.bricks:
-            pygame.draw.rect(self.screen, brick["color"], brick["rect"])
-
-        pygame.display.flip()
-
-        pygame.event.pump()
-
         if not self.headless:
+            self.screen.fill((12, 48, 92))
+            pygame.draw.rect(self.screen, (235, 245, 255), self.paddle)
+            pygame.draw.circle(self.screen, self.current_ball_color, self.ball_pos, self.BALL_RADIUS)
+
+            for brick in self.bricks:
+                pygame.draw.rect(self.screen, brick["color"], brick["rect"])
+
+            pygame.display.flip()
+
+            pygame.event.pump()
+
             self.clock.tick(120)
 
         return self.get_game_data(), reward, done
