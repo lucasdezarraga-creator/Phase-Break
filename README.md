@@ -15,9 +15,11 @@ To solve this, the agent is upgraded with a 6-dimensional state space ("Color Vi
 A custom-built Pygame implementation of Breakout featuring:
 * Fully integrated physics, bounding boxes, and collision mechanics.
 * A dynamic RGB tuple tracking array to map ball-to-brick color states.
-* An optimized headless "dummy" rendering mode for high-velocity machine learning.
 
-### 2. The Brain & Agent (`train_fero_aero.py`)
+### 2. The Game Environment (`Phase_Brick.py`)
+The main training environment for fast-paced training. This is the headless mode evnvironment.
+
+### 3. The Brain & Agent (`train_fero_aero.py`)
 * **Neural Network:** A Deep Q-Network (DQN) built in PyTorch featuring 128 hidden nodes across dense layers to process complex spatial-color dimensions.
 * **Optimization:** Adam optimizer paired with a Mean Squared Error (MSE) loss calculation loop.
 * **Experience Replay:** A cyclic memory buffer (`deque`) that stores past frames to break data correlation and smooth out gradient updates.
