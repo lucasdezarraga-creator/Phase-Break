@@ -35,12 +35,8 @@ To prevent the agent from getting trapped in local minimums (like running away o
 
 ---
 
-## Hyperparameters
-```python
-LEARN_RATE = 0.001     # Optimized for Adam gradient tracking
-DISCOUNT = 0.99        # Long-term future reward appreciation
-EPSILON_START = 1.0    # Begins with 100% random exploration
-EPSILON_DECAY = 0.996  # Calibrated for swift model exploitation convergence
-EPSILON_MIN = 0.01     # Retained base curiosity
-MEMORY_SIZE = 5000     # Fresh memory pool to overwrite stale habits quickly
-BATCH_SIZE = 64        # Lightweight matrix batch sizes for high CPU processing speeds
+## Acknowledgments & Development Note
+
+This architecture was developed using AI-assisted engineering practices in collaboration with Google Gemini to optimize the high-performance Rust physics simulation, map corresponding multi-language state spaces, and design the decoupled Deep Q-Network pipeline.
+
+It has been an absolute blast helping you wire up this high-speed engine, wrestle with Windows PowerShell wildcards, and beat back the GitHub 100MB file limits! Fero Aero is running on an incredibly sleek stack now.
