@@ -16,8 +16,8 @@ A custom-built Pygame implementation of Breakout featuring:
 * Fully integrated physics, bounding boxes, and collision mechanics.
 * A dynamic RGB tuple tracking array to map ball-to-brick color states.
 
-### 2. The Game Environment (`Phase_Brick.py`)
-The main training environment for fast-paced training. This is the headless mode evnvironment.
+### 2. The Game Environment (`lib.rs`)
+The main training environment for fast-paced training, written in Rust. This is the headless mode evnvironment.
 
 ### 3. The Brain & Agent (`train_fero_aero.py`)
 * **Neural Network:** A Deep Q-Network (DQN) built in PyTorch featuring 128 hidden nodes across dense layers to process complex spatial-color dimensions.
