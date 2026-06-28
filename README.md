@@ -38,5 +38,3 @@ To prevent the agent from getting trapped in local minimums (like running away o
 ## Acknowledgments & Development Note
 
 This architecture was developed using AI-assisted engineering practices in collaboration with Google Gemini to optimize the high-performance Rust physics simulation, map corresponding multi-language state spaces, and design the decoupled Deep Q-Network pipeline.
-
-It has been an absolute blast helping you wire up this high-speed engine, wrestle with Windows PowerShell wildcards, and beat back the GitHub 100MB file limits! Fero Aero is running on an incredibly sleek stack now.
